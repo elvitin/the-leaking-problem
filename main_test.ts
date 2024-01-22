@@ -1,6 +1,9 @@
 import postgresjs from 'https://deno.land/x/postgresjs@v3.4.3/mod.js';
-import { describe, it, beforeEach, afterEach, afterAll } from 'https://deno.land/std@0.212.0/testing/bdd.ts';
+import { describe, it, beforeEach, afterEach, afterAll, beforeAll } from 'https://deno.land/std@0.212.0/testing/bdd.ts';
 import { expect } from 'https://deno.land/std@0.212.0/expect/mod.ts';
+import { msgMoji } from '/utils/msgmoji.ts';
+const d = msgMoji('🧪test_tube');
+const i = msgMoji('🟡yellow_circle');
 
 const sql = postgresjs({
   host: '0.0.0.0',
@@ -10,12 +13,17 @@ const sql = postgresjs({
   database: 'leak_problem_db'
 });
 
-const sanatizers = false;
+const sanatizers = true;
 
-describe('leak problem test', { sanitizeOps: sanatizers, sanitizeResources: sanatizers }, () => {
+describe(d('leak problem test'), { sanitizeOps: sanatizers, sanitizeResources: sanatizers }, () => {
   afterEach(async () => {
     const dropResult = await sql`DROP TABLE IF EXISTS leak_problem_table;`.execute();
     console.log('drop_result: ', dropResult);
+  });
+
+  beforeAll(async () => {
+    const version = await sql`SELECT version();`;
+    console.log('open connection: ', JSON.stringify(version.at(0), undefined, 2));
   });
 
   beforeEach(async () => {
@@ -31,7 +39,7 @@ describe('leak problem test', { sanitizeOps: sanatizers, sanitizeResources: sana
     await sql.end();
   });
 
-  it('should not leak', async () => {
+  it(i('should not leak'), async () => {
     type LeakType = { name: string };
     const insertResult = await sql<Array<LeakType>>`
       INSERT INTO leak_problem_table 

@@ -1,4 +1,8 @@
 {
+  "imports": {
+    "/": "./",
+    "./": "./"
+  },
   "tasks": {
     "test": "deno test --allow-env --allow-net --trace-ops --allow-none",
     "db:build": "docker build -t leak_problem_app_pg:16.1 . && docker run -d --name leak_problem_app_pg_instance -v pgvol:/var/lib/postgresql/data -p 5432:5432 leak_problem_app_pg:16.1",
